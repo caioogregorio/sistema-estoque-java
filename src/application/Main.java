@@ -9,19 +9,47 @@ public class Main {
 	public static void main(String[] args) {
 		
 		Scanner sc = new Scanner(System.in);
+		Estoque estoque = new Estoque();
+		int opcao = 1;
 		
-		System.out.println("Deseja cadastrar um produto?(1-sim|2-não): ");
-		int opcao = sc.nextInt();
+		while (opcao != 0) {
+		System.out.println("-----M E N U -----");
+		System.out.println("1 - Cadastrar produto");
+		System.out.println("2 - Listar produtos");
+		System.out.println("3 - Buscar produto");
+		System.out.println("4 - Remover produto");
+		System.out.println("0 - Sair");
+		System.out.println();
 		
-		if(opcao == 1) {
-			System.out.println("Insira os dados do produto que voce quer cadastrar");
-			Estoque p = new Estoque();
-			p.adicionarProduto();
-			p.listarProdutos();
+		System.out.println("Insira a opção desejada");
+		opcao = sc.nextInt();
+		
+		
+			if(opcao < 0 || opcao > 4) {
+				System.out.println("Opção inválida");
+				System.out.println("Digite novamente: ");
+				opcao = sc.nextInt();
+			}
+			switch(opcao) {
+				case 1:
+					estoque.adicionarProduto();
+					break;
+				case 2:
+					estoque.listarProdutos();
+					break;
+				case 3:
+					estoque.buscarProduto();
+					break;
+				case 4:
+					estoque.removerProduto();
+					break;
+			}
+			
 		}
-		else {
-			System.out.println("A lista esta vazia");
-		}
+		
+		System.out.println("Fim do programa");
+		
+		sc.close();
 
 	}
 
