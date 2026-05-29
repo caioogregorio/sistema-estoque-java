@@ -124,9 +124,66 @@ public class Estoque {
 		if(!encontrado) {
 			System.out.println("Produto não encontrado.");
 		}
-		
-			
-			
 	}
 
+	public void atualizarProduto() {
+		sc.nextLine();
+		
+		System.out.println("Qual o nome do produto que você deseja atualizar os dados?");
+		String nome = sc.nextLine();
+		
+		boolean encontrado = false;
+		
+		for(Produto p : produtos) {
+			
+			if(p.getNome().equalsIgnoreCase(nome)) {
+				encontrado = true;
+				
+				System.out.println("O que você deseja alterar?\n"
+						+ "1 - Nome\n"
+						+ "2 - Preço\n"
+						+ "3 - Quantidade\n"
+						+ "4 - Sair");
+				System.out.println("Insira a opção desejada: ");
+				int opcao = sc.nextInt();
+				
+				while(opcao != 4) {
+		
+				switch(opcao) {
+					case 1:
+						sc.nextLine();
+						System.out.println("Insira o novo nome: ");
+						String novoNome = sc.nextLine();
+						p.setNome(novoNome);
+						System.out.println("Produto atualizado com sucesso!");
+						System.out.println(p);
+						break;
+					case 2:
+						System.out.println("Insira o novo preço: ");
+						double novoPreco = sc.nextDouble();
+						p.setPreco(novoPreco);
+						System.out.println("Produto atualizado com sucesso!");
+						System.out.println(p);
+						break;
+					case 3:
+						System.out.println("Insira uma nova quantidade: ");
+						int quantidadeNova = sc.nextInt();
+						p.setQuantidade(quantidadeNova);
+						System.out.println("Produto atualizado com sucesso!");
+						System.out.println(p);
+						break;
+					}
+				
+				System.out.println("Insira a opção desejada");
+				opcao = sc.nextInt();
+				
+				}break;
+			}
+			
+		}
+		if(!encontrado) {
+			System.out.println("Produto não foi encontrado");
+		}
+	}
+	
 }
