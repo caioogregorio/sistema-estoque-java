@@ -85,13 +85,48 @@ public class Estoque {
 		if(!encontrado) {
 			System.out.println("Produto nao encontrado");
 		}
-		
-		
-			
-		
 	}
+	
+	public void realizarVenda() {
+		sc.nextLine();
+		
+		System.out.println("Insira o nome do produto a ser vendido: ");
+		String venda = sc.nextLine();
+		
+		boolean encontrado = false;
+		
+		for(Produto p: produtos) {
 			
-			
+			if(p.getNome().equalsIgnoreCase(venda)) {
+				
+				encontrado = true;
+				
+				System.out.println("Informe a quantidade: ");
+				int quantidadeVendida = sc.nextInt();
+						
+				while(quantidadeVendida <= 0) {
+						System.out.println("A quantidade deve ser maior que zero para ser vendida.");
+						System.out.println("Informe novamente: ");
+						quantidadeVendida = sc.nextInt();
+				}
+					
+				if(quantidadeVendida > p.getQuantidade()) {
+					System.out.println("Não temos essa quantidade no estoque.");
+				}
+				else {
+					System.out.println("Venda realizada com sucesso!");
+					p.setQuantidade(p.getQuantidade() - quantidadeVendida);	
+				}
+			break;
+			} 
 		}
+		
+		if(!encontrado) {
+			System.out.println("Produto não encontrado.");
+		}
+		
+			
+			
+	}
 
-
+}

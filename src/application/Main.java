@@ -18,6 +18,7 @@ public class Main {
 		System.out.println("2 - Listar produtos");
 		System.out.println("3 - Buscar produto");
 		System.out.println("4 - Remover produto");
+		System.out.println("5 - Realizar venda");
 		System.out.println("0 - Sair");
 		System.out.println();
 		
@@ -42,6 +43,9 @@ public class Main {
 					break;
 				case 4:
 					estoque.removerProduto();
+					break;
+				case 5:
+					
 					break;
 			}
 			
