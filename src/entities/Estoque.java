@@ -2,12 +2,22 @@ package entities;
 
 import java.util.ArrayList;
 import java.util.Scanner;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 
 public class Estoque {
 	
 	private ArrayList<Produto> produtos = new ArrayList<>();
 	
 	Scanner sc = new Scanner(System.in);
+	
+	public Estoque() {
+		carregarProdutos();
+	}
 	
 	public void adicionarProduto() {
 			sc.nextLine();
@@ -21,6 +31,7 @@ public class Estoque {
 			Produto p = new Produto(nome, preco, quantidade);
 				
 			produtos.add(p);
+			salvarProdutoNoArquivo(p);
 	}
 	
 	public void listarProdutos() {
@@ -33,6 +44,7 @@ public class Estoque {
 			for (Produto p : produtos) {
 				System.out.println("Produto número " + quantidade);
 				System.out.println(p);
+				System.out.println();
 				quantidade += 1;
 			}
 	}
@@ -183,6 +195,45 @@ public class Estoque {
 		}
 		if(!encontrado) {
 			System.out.println("Produto não foi encontrado");
+		}
+	}
+	
+	
+	public void salvarProdutoNoArquivo(Produto p) {
+		try {
+			BufferedWriter bw = new BufferedWriter(
+					new FileWriter("produtos.txt", true));
+			bw.write(
+				p.getNome() + ", " +
+				p.getPreco() + ", " +
+				p.getQuantidade()
+				);		
+			bw.newLine();
+			bw.close();
+		}
+		catch(IOException e) {
+			System.out.println("Erro ao salvar produto. " + e.getMessage());
+		}
+	}
+	
+	public void carregarProdutos() {
+		try {
+			BufferedReader br = new BufferedReader(
+				new FileReader("produtos.txt")
+			);
+			
+			String linha;
+			
+			while((linha = br.readLine()) != null) {
+				String[] dados = linha.split(",");
+				String nome = dados[0].trim();
+				double preco = Double.parseDouble(dados[1].trim());
+				int quantidade = Integer.parseInt(dados[2].trim());
+				Produto p = new Produto(nome, preco, quantidade);
+				produtos.add(p);
+			}
+		}catch(IOException e) {
+			System.out.println("Erro ao carregar produtos. " + e.getMessage());
 		}
 	}
 	
