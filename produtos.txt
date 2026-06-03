@@ -1,2 +1,3 @@
 Pc, 3000.0, 10
 Telefone, 100.0, 1
+Controle, 20.0, 3

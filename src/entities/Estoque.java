@@ -86,7 +86,7 @@ public class Estoque {
 			
 			if(p.getNome().equalsIgnoreCase(remover)) {
 				produtos.remove(i);	
-				
+				salvarTodosProdutos();
 				encontrado = true;
 				System.out.println("Produto removido com sucesso");
 				break;
@@ -128,6 +128,7 @@ public class Estoque {
 				else {
 					System.out.println("Venda realizada com sucesso!");
 					p.setQuantidade(p.getQuantidade() - quantidadeVendida);	
+					salvarTodosProdutos();
 				}
 			break;
 			} 
@@ -167,6 +168,7 @@ public class Estoque {
 						System.out.println("Insira o novo nome: ");
 						String novoNome = sc.nextLine();
 						p.setNome(novoNome);
+						salvarTodosProdutos();
 						System.out.println("Produto atualizado com sucesso!");
 						System.out.println(p);
 						break;
@@ -174,6 +176,7 @@ public class Estoque {
 						System.out.println("Insira o novo preço: ");
 						double novoPreco = sc.nextDouble();
 						p.setPreco(novoPreco);
+						salvarTodosProdutos();
 						System.out.println("Produto atualizado com sucesso!");
 						System.out.println(p);
 						break;
@@ -181,6 +184,7 @@ public class Estoque {
 						System.out.println("Insira uma nova quantidade: ");
 						int quantidadeNova = sc.nextInt();
 						p.setQuantidade(quantidadeNova);
+						salvarTodosProdutos();
 						System.out.println("Produto atualizado com sucesso!");
 						System.out.println(p);
 						break;
@@ -232,8 +236,33 @@ public class Estoque {
 				Produto p = new Produto(nome, preco, quantidade);
 				produtos.add(p);
 			}
+			
+			br.close();
+			
 		}catch(IOException e) {
 			System.out.println("Erro ao carregar produtos. " + e.getMessage());
+		}
+	}
+	
+	public void salvarTodosProdutos() {
+		try {
+			BufferedWriter bw = new BufferedWriter(
+					new FileWriter("produtos.txt")
+					);
+			
+			for (Produto p : produtos) {
+				bw.write(
+						p.getNome() + ", " +
+						p.getPreco() + ", " +
+						p.getQuantidade()
+						);
+				
+				bw.newLine();
+			}
+			
+			bw.close();
+		} catch(IOException e) {
+			System.out.println("Erro ao salvar produtos: " + e.getMessage());
 		}
 	}
 	
