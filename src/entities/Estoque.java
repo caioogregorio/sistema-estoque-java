@@ -1,17 +1,17 @@
 package entities;
 
-import java.util.ArrayList;
-import java.util.Scanner;
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Scanner;
 
 public class Estoque {
 	
 	private ArrayList<Produto> produtos = new ArrayList<>();
+	private ArrayList<Venda> vendas = new ArrayList<>();
 	
 	Scanner sc = new Scanner(System.in);
 	
@@ -103,13 +103,13 @@ public class Estoque {
 		sc.nextLine();
 		
 		System.out.println("Insira o nome do produto a ser vendido: ");
-		String venda = sc.nextLine();
+		String nomeProduto = sc.nextLine();
 		
 		boolean encontrado = false;
 		
 		for(Produto p: produtos) {
 			
-			if(p.getNome().equalsIgnoreCase(venda)) {
+			if(p.getNome().equalsIgnoreCase(nomeProduto)) {
 				
 				encontrado = true;
 				
@@ -128,7 +128,13 @@ public class Estoque {
 				else {
 					System.out.println("Venda realizada com sucesso!");
 					p.setQuantidade(p.getQuantidade() - quantidadeVendida);	
+					Venda venda = new Venda(p, quantidadeVendida);
+					vendas.add(venda);
+					salvarVendaNoArquivo(venda);
+					System.out.println(venda);
+					
 					salvarTodosProdutos();
+					
 				}
 			break;
 			} 
@@ -266,4 +272,38 @@ public class Estoque {
 		}
 	}
 	
+	public void listarVendas() {
+		if(vendas.isEmpty()) {
+			System.out.println("Nenhuma venda realizada.");
+			return;
+		}
+		
+		int numero = 1;
+		
+		for(Venda venda : vendas) {
+			System.out.println("Venda " + numero);
+			System.out.println(venda);
+			System.out.println();
+			
+			numero += 1;
+		}
+	}
+	
+	public void salvarVendaNoArquivo(Venda venda){
+		try {
+			BufferedWriter bw = new BufferedWriter(
+					new FileWriter("vendas.txt", true));
+			bw.write(
+				venda.getProduto().getNome() + ", " +
+				venda.getProduto().getPreco() + ", " +
+				venda.getQuantidadeVendida() + ", " +
+				venda.getDataVenda()
+				);		
+			bw.newLine();
+			bw.close();
+		}
+		catch(IOException e) {
+			System.out.println("Erro ao salvar venda. " + e.getMessage());
+		}
+	}
 }

@@ -20,6 +20,7 @@ public class Menu {
 			System.out.println("4 - Remover produto");
 			System.out.println("5 - Realizar venda");
 			System.out.println("6 - Atualizar produto");
+			System.out.println("7 - Listar vendas");
 			System.out.println("0 - Sair");
 			System.out.println();
 			
@@ -53,6 +54,9 @@ public class Menu {
 						break;
 					case 6:
 						estoque.atualizarProduto();
+						break;
+					case 7:
+						estoque.listarVendas();
 						break;
 				}
 				
