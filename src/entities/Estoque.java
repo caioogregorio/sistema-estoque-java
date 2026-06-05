@@ -5,6 +5,7 @@ import java.io.BufferedWriter;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -17,12 +18,20 @@ public class Estoque {
 	
 	public Estoque() {
 		carregarProdutos();
+		carregarVendas();
 	}
 	
 	public void adicionarProduto() {
 			sc.nextLine();
+			
 			System.out.println("Nome: ");
 			String nome = sc.nextLine();
+			
+			if(produtoExiste(nome)) {
+				System.out.println("Produto ja cadastrado.");
+				return;
+			}
+			
 			System.out.println("Preço: ");
 			double preco = sc.nextDouble();
 			System.out.println("Quantidade: ");
@@ -305,5 +314,41 @@ public class Estoque {
 		catch(IOException e) {
 			System.out.println("Erro ao salvar venda. " + e.getMessage());
 		}
+	}
+	
+	public void carregarVendas() {
+		try {
+			BufferedReader br = new BufferedReader(
+				new FileReader("vendas.txt")
+			);
+			
+			String linha;
+			
+			while((linha = br.readLine()) != null) {
+				String[] dados = linha.split(",");
+				String nome = dados[0].trim();
+				double preco = Double.parseDouble(dados[1].trim());
+				int quantidadeVendida = Integer.parseInt(dados[2].trim());
+				LocalDateTime dataVenda = LocalDateTime.parse(dados[3].trim());
+				Produto produto = new Produto(nome, preco, 0);
+				Venda venda = new Venda(produto, quantidadeVendida, dataVenda);
+				vendas.add(venda);
+			}
+			
+			br.close();
+			} catch(IOException e) {
+				System.out.println("Erro ao carregar vendas: " + e.getMessage());
+			}
+	}	
+	
+	private boolean produtoExiste(String nome) {
+		for(Produto p : produtos) {
+			
+			if(p.getNome().equalsIgnoreCase(nome)) {
+				return true;
+			}
+		}
+		
+		return false;
 	}
 }
