@@ -351,4 +351,45 @@ public class Estoque {
 		
 		return false;
 	}
+	
+	public void reporEstoque() {
+		sc.nextLine();
+		
+		System.out.println("Nome do produto: ");
+		String nome = sc.nextLine();
+		
+		boolean encontrado = false;
+		
+		for(Produto p : produtos) {
+			
+			if(p.getNome().equalsIgnoreCase(nome)) {
+				
+				encontrado = true;
+				
+				System.out.println("Insira a quantidade a ser adicionada: ");
+				int quantidadeReposicao = sc.nextInt();
+				
+				while(quantidadeReposicao <=0) {	
+						System.out.println("Quantidade inválida, insira novamente: ");
+						quantidadeReposicao = sc.nextInt();
+				}
+				
+				p.setQuantidade(p.getQuantidade() + quantidadeReposicao);
+				
+				salvarTodosProdutos();
+				
+				System.out.println("Estoque atualizado com sucesso.");
+				System.out.println("Nova quantidade: " + p.getQuantidade());
+				
+				break;
+			}
+			
+		}
+		
+		if(!encontrado) {
+			System.out.println("Produto não encontrado");
+		}
+	}
+
+
 }
