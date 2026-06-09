@@ -1,12 +1,6 @@
 package entities;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
+
 import java.util.Scanner;
 
 import repository.ProdutoRepository;
@@ -16,13 +10,10 @@ import repository.VendaRepository;
 
 public class Estoque {
 	
-	private ArrayList<Venda> vendas = new ArrayList<>();
 	
 	Scanner sc = new Scanner(System.in);
 	
-	public Estoque() {
-		carregarVendas();
-	}
+	public Estoque() {}
 	
 	public void adicionarProduto() {
 			sc.nextLine();
@@ -138,6 +129,8 @@ public class Estoque {
 				int novaQuantidade = sc.nextInt();
 				ProdutoRepository.atualizarProduto(nome, produto.getPreco(), novaQuantidade);
 				break;
+			case 3:
+				return;
 			default:
 				System.out.println("Opção inválida");
 				break;
@@ -147,65 +140,9 @@ public class Estoque {
 	}
 	
 	public void listarVendas() {
-		if(vendas.isEmpty()) {
-			System.out.println("Nenhuma venda realizada.");
-			return;
-		}
-		
-		int numero = 1;
-		
-		for(Venda venda : vendas) {
-			System.out.println("Venda " + numero);
-			System.out.println(venda);
-			System.out.println();
-			
-			numero += 1;
-		}
+		VendaRepository.listarVendas();
 	}
-	
-	public void salvarVendaNoArquivo(Venda venda){
-		try {
-			BufferedWriter bw = new BufferedWriter(
-					new FileWriter("vendas.txt", true));
-			bw.write(
-				venda.getProduto().getNome() + ", " +
-				venda.getProduto().getPreco() + ", " +
-				venda.getQuantidadeVendida() + ", " +
-				venda.getDataVenda()
-				);		
-			bw.newLine();
-			bw.close();
-		}
-		catch(IOException e) {
-			System.out.println("Erro ao salvar venda. " + e.getMessage());
-		}
-	}
-	
-	public void carregarVendas() {
-		try {
-			BufferedReader br = new BufferedReader(
-				new FileReader("vendas.txt")
-			);
-			
-			String linha;
-			
-			while((linha = br.readLine()) != null) {
-				String[] dados = linha.split(",");
-				String nome = dados[0].trim();
-				double preco = Double.parseDouble(dados[1].trim());
-				int quantidadeVendida = Integer.parseInt(dados[2].trim());
-				LocalDateTime dataVenda = LocalDateTime.parse(dados[3].trim());
-				Produto produto = new Produto(nome, preco, 0);
-				Venda venda = new Venda(produto, quantidadeVendida, dataVenda);
-				vendas.add(venda);
-			}
-			
-			br.close();
-			} catch(IOException e) {
-				System.out.println("Erro ao carregar vendas: " + e.getMessage());
-			}
-	}	
-	
+		
 	public void reporEstoque() {
 		sc.nextLine();
 		
@@ -238,7 +175,11 @@ public class Estoque {
 		            + (produto.getQuantidade() + quantidadeReposicao));
 	}
 
-	
+	public void mostrarFaturamentoTotal() {
+		double total = VendaRepository.faturamentoTotal();
+		
+		System.out.println("Faturamento total: RS " + total);
+	}
 	
 
 }

@@ -2,6 +2,7 @@ package repository;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 
@@ -41,4 +42,60 @@ public class VendaRepository {
 		 
 		
 	}
+	
+	public static void listarVendas() {
+			
+			try {
+				
+				Connection conn = DB.getConnection();
+				
+				String sql = "SELECT * FROM venda";
+				
+				PreparedStatement st = conn.prepareStatement(sql);
+						
+				ResultSet rs = st.executeQuery();
+				
+				while(rs.next()) {
+					System.out.println(
+							rs.getInt("id") + " - " +
+							rs.getInt("produto_id") + " - " +
+							rs.getInt("quantidade_vendida") + " - " +
+							rs.getDouble("valor_total" ) + " - " + 
+							rs.getTimestamp("data_venda")
+						);	
+				}
+				
+				rs.close();
+				st.close();
+				conn.close();
+				
+				
+			} catch (Exception e) {
+				System.out.println(e.getMessage());
+			}
+		}
+		
+	public static double faturamentoTotal() {
+		
+		try {
+			
+			Connection conn = DB.getConnection();
+			
+			String sql = "SELECT SUM(valor_total) AS total FROM venda";
+			
+			PreparedStatement st = conn.prepareStatement(sql);
+			
+			ResultSet rs = st.executeQuery();
+			
+			if(rs.next()) {
+				return rs.getDouble("total");
+			}
+			
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		}
+		
+		return 0.0;
+	}
+
 }

@@ -22,6 +22,7 @@ public class Menu {
 			System.out.println("6 - Atualizar produto");
 			System.out.println("7 - Listar vendas");
 			System.out.println("8 - Repor estoque");
+			System.out.println("9 - Mostrar faturamento total");
 			System.out.println("0 - Sair");
 			System.out.println();
 			
@@ -61,6 +62,9 @@ public class Menu {
 						break;
 					case 8:
 						estoque.reporEstoque();
+						break;
+					case 9:
+						estoque.mostrarFaturamentoTotal();
 						break;
 				}
 				
