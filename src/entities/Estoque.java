@@ -9,6 +9,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+
+
 public class Estoque {
 	
 	private ArrayList<Produto> produtos = new ArrayList<>();
@@ -391,5 +393,7 @@ public class Estoque {
 		}
 	}
 
+	
+	
 
 }
