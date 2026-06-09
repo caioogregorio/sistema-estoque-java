@@ -9,17 +9,18 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+import repository.ProdutoRepository;
+import repository.VendaRepository;
+
 
 
 public class Estoque {
 	
-	private ArrayList<Produto> produtos = new ArrayList<>();
 	private ArrayList<Venda> vendas = new ArrayList<>();
 	
 	Scanner sc = new Scanner(System.in);
 	
 	public Estoque() {
-		carregarProdutos();
 		carregarVendas();
 	}
 	
@@ -29,9 +30,9 @@ public class Estoque {
 			System.out.println("Nome: ");
 			String nome = sc.nextLine();
 			
-			if(produtoExiste(nome)) {
-				System.out.println("Produto ja cadastrado.");
-				return;
+			if(ProdutoRepository.buscarProduto(nome) != null) {
+			    System.out.println("Produto já cadastrado.");
+			    return;
 			}
 			
 			System.out.println("Preço: ");
@@ -40,48 +41,26 @@ public class Estoque {
 			int quantidade = sc.nextInt();
 				
 			Produto p = new Produto(nome, preco, quantidade);
-				
-			produtos.add(p);
-			salvarProdutoNoArquivo(p);
+			
+			ProdutoRepository.inserirProduto(p);
 	}
 	
 	public void listarProdutos() {
-		if(produtos.isEmpty()) {
-			System.out.println("Nenhum produto cadastrado.");
-			return;
-		}
-	
-			int quantidade = 1;
-			for (Produto p : produtos) {
-				System.out.println("Produto número " + quantidade);
-				System.out.println(p);
-				System.out.println();
-				quantidade += 1;
-			}
+		ProdutoRepository.listarProdutos();
 	}
 	
 	public void buscarProduto(){
-		if(produtos.isEmpty()) {
-			System.out.println("Nenhum produto cadastrado");
-			return;
-		}
-		
 		sc.nextLine();
-		
 		System.out.println("Insira o nome do produto que deseja buscar: ");
-		String busca = sc.nextLine();
+		String nome = sc.nextLine();
+		Produto produto = ProdutoRepository.buscarProduto(nome);
 		
-		boolean encontrado = false;
-		
-		for(Produto p: produtos) {
-			if(p.getNome().equalsIgnoreCase(busca)) {
-				System.out.println(p);
-				encontrado = true;
-			} 
+		if(produto != null) {
+			System.out.println(produto);
+		} else {
+			System.out.println("Produto não encontrado.");
 		}
-		if(!encontrado) {
-			System.out.println("Produto não encontrado");
-		}
+			
 	}
 	
 	public void removerProduto() {
@@ -89,25 +68,7 @@ public class Estoque {
 		System.out.println("Nome do produto que deseja remover: ");
 		String remover = sc.nextLine();
 		
-		boolean encontrado = false;
-		
-		for(int i = 0; i < produtos.size(); i++) {
-			
-			Produto p = produtos.get(i);
-			
-			if(p.getNome().equalsIgnoreCase(remover)) {
-				produtos.remove(i);	
-				salvarTodosProdutos();
-				encontrado = true;
-				System.out.println("Produto removido com sucesso");
-				break;
-			}
-			
-		}
-		
-		if(!encontrado) {
-			System.out.println("Produto nao encontrado");
-		}
+		ProdutoRepository.removerProduto(remover);
 	}
 	
 	public void realizarVenda() {
@@ -116,44 +77,37 @@ public class Estoque {
 		System.out.println("Insira o nome do produto a ser vendido: ");
 		String nomeProduto = sc.nextLine();
 		
-		boolean encontrado = false;
+		Produto produto = ProdutoRepository.buscarProduto(nomeProduto);
 		
-		for(Produto p: produtos) {
-			
-			if(p.getNome().equalsIgnoreCase(nomeProduto)) {
-				
-				encontrado = true;
-				
-				System.out.println("Informe a quantidade: ");
-				int quantidadeVendida = sc.nextInt();
-						
-				while(quantidadeVendida <= 0) {
-						System.out.println("A quantidade deve ser maior que zero para ser vendida.");
-						System.out.println("Informe novamente: ");
-						quantidadeVendida = sc.nextInt();
-				}
-					
-				if(quantidadeVendida > p.getQuantidade()) {
-					System.out.println("Não temos essa quantidade no estoque.");
-				}
-				else {
-					System.out.println("Venda realizada com sucesso!");
-					p.setQuantidade(p.getQuantidade() - quantidadeVendida);	
-					Venda venda = new Venda(p, quantidadeVendida);
-					vendas.add(venda);
-					salvarVendaNoArquivo(venda);
-					System.out.println(venda);
-					
-					salvarTodosProdutos();
-					
-				}
-			break;
-			} 
-		}
-		
-		if(!encontrado) {
+		if(produto == null) {
 			System.out.println("Produto não encontrado.");
+			return;
+		} 
+		
+		System.out.println("Informe a quantidade a ser vendida: ");
+		int quantidadeVendida = sc.nextInt();
+		
+		while(quantidadeVendida <=0) {
+			System.out.println("Quantidade inválida, insira novamente.");
+			quantidadeVendida = sc.nextInt();
 		}
+		
+		if(quantidadeVendida > produto.getQuantidade()) {
+		    System.out.println("Não temos essa quantidade disponível no estoque.");
+		    return;
+		}
+		
+		ProdutoRepository.atualizarProduto(
+			    produto.getNome(),
+			    produto.getPreco(),
+			    produto.getQuantidade() - quantidadeVendida
+			);
+		
+		Venda venda = new Venda(produto, quantidadeVendida);
+
+		VendaRepository.inserirVenda(venda);
+
+		System.out.println(venda);
 	}
 
 	public void atualizarProduto() {
@@ -162,125 +116,34 @@ public class Estoque {
 		System.out.println("Qual o nome do produto que você deseja atualizar os dados?");
 		String nome = sc.nextLine();
 		
-		boolean encontrado = false;
+		Produto produto = ProdutoRepository.buscarProduto(nome);
 		
-		for(Produto p : produtos) {
-			
-			if(p.getNome().equalsIgnoreCase(nome)) {
-				encontrado = true;
-				
-				System.out.println("O que você deseja alterar?\n"
-						+ "1 - Nome\n"
-						+ "2 - Preço\n"
-						+ "3 - Quantidade\n"
-						+ "4 - Sair");
-				System.out.println("Insira a opção desejada: ");
-				int opcao = sc.nextInt();
-				
-				while(opcao != 4) {
+		if(produto == null) {
+			System.out.println("Produto não encontrado.");
+			return;
+		}
+		System.out.println(produto);
+		System.out.println("O que você deseja alterar?\n1 - Alterar preço\n2 - Alterar quantidade\n3 - sair");
+		int opcao = sc.nextInt();
 		
-				switch(opcao) {
-					case 1:
-						sc.nextLine();
-						System.out.println("Insira o novo nome: ");
-						String novoNome = sc.nextLine();
-						p.setNome(novoNome);
-						salvarTodosProdutos();
-						System.out.println("Produto atualizado com sucesso!");
-						System.out.println(p);
-						break;
-					case 2:
-						System.out.println("Insira o novo preço: ");
-						double novoPreco = sc.nextDouble();
-						p.setPreco(novoPreco);
-						salvarTodosProdutos();
-						System.out.println("Produto atualizado com sucesso!");
-						System.out.println(p);
-						break;
-					case 3:
-						System.out.println("Insira uma nova quantidade: ");
-						int quantidadeNova = sc.nextInt();
-						p.setQuantidade(quantidadeNova);
-						salvarTodosProdutos();
-						System.out.println("Produto atualizado com sucesso!");
-						System.out.println(p);
-						break;
-					}
+		switch(opcao) {
+			case 1:
+				System.out.println("Insira o novo preço: ");
+				double novoPreco = sc.nextDouble();
 				
-				System.out.println("Insira a opção desejada");
-				opcao = sc.nextInt();
-				
-				}break;
-			}
-			
+				ProdutoRepository.atualizarProduto(nome, novoPreco, produto.getQuantidade());
+				break;
+			case 2:
+				System.out.println("Insira a nova quantidade: ");
+				int novaQuantidade = sc.nextInt();
+				ProdutoRepository.atualizarProduto(nome, produto.getPreco(), novaQuantidade);
+				break;
+			default:
+				System.out.println("Opção inválida");
+				break;
+					
 		}
-		if(!encontrado) {
-			System.out.println("Produto não foi encontrado");
-		}
-	}
-	
-	
-	public void salvarProdutoNoArquivo(Produto p) {
-		try {
-			BufferedWriter bw = new BufferedWriter(
-					new FileWriter("produtos.txt", true));
-			bw.write(
-				p.getNome() + ", " +
-				p.getPreco() + ", " +
-				p.getQuantidade()
-				);		
-			bw.newLine();
-			bw.close();
-		}
-		catch(IOException e) {
-			System.out.println("Erro ao salvar produto. " + e.getMessage());
-		}
-	}
-	
-	public void carregarProdutos() {
-		try {
-			BufferedReader br = new BufferedReader(
-				new FileReader("produtos.txt")
-			);
-			
-			String linha;
-			
-			while((linha = br.readLine()) != null) {
-				String[] dados = linha.split(",");
-				String nome = dados[0].trim();
-				double preco = Double.parseDouble(dados[1].trim());
-				int quantidade = Integer.parseInt(dados[2].trim());
-				Produto p = new Produto(nome, preco, quantidade);
-				produtos.add(p);
-			}
-			
-			br.close();
-			
-		}catch(IOException e) {
-			System.out.println("Erro ao carregar produtos. " + e.getMessage());
-		}
-	}
-	
-	public void salvarTodosProdutos() {
-		try {
-			BufferedWriter bw = new BufferedWriter(
-					new FileWriter("produtos.txt")
-					);
-			
-			for (Produto p : produtos) {
-				bw.write(
-						p.getNome() + ", " +
-						p.getPreco() + ", " +
-						p.getQuantidade()
-						);
-				
-				bw.newLine();
-			}
-			
-			bw.close();
-		} catch(IOException e) {
-			System.out.println("Erro ao salvar produtos: " + e.getMessage());
-		}
+		
 	}
 	
 	public void listarVendas() {
@@ -343,54 +206,36 @@ public class Estoque {
 			}
 	}	
 	
-	private boolean produtoExiste(String nome) {
-		for(Produto p : produtos) {
-			
-			if(p.getNome().equalsIgnoreCase(nome)) {
-				return true;
-			}
-		}
-		
-		return false;
-	}
-	
 	public void reporEstoque() {
 		sc.nextLine();
 		
 		System.out.println("Nome do produto: ");
 		String nome = sc.nextLine();
 		
-		boolean encontrado = false;
+		Produto produto = ProdutoRepository.buscarProduto(nome);
 		
-		for(Produto p : produtos) {
-			
-			if(p.getNome().equalsIgnoreCase(nome)) {
-				
-				encontrado = true;
-				
-				System.out.println("Insira a quantidade a ser adicionada: ");
-				int quantidadeReposicao = sc.nextInt();
-				
-				while(quantidadeReposicao <=0) {	
-						System.out.println("Quantidade inválida, insira novamente: ");
-						quantidadeReposicao = sc.nextInt();
-				}
-				
-				p.setQuantidade(p.getQuantidade() + quantidadeReposicao);
-				
-				salvarTodosProdutos();
-				
-				System.out.println("Estoque atualizado com sucesso.");
-				System.out.println("Nova quantidade: " + p.getQuantidade());
-				
-				break;
-			}
-			
+		if(produto == null) {
+			System.out.println("Produto não encontrado.");
+			return;
 		}
 		
-		if(!encontrado) {
-			System.out.println("Produto não encontrado");
+		System.out.println("Insira a quantidade a ser adicionada:");
+		int quantidadeReposicao = sc.nextInt();
+		
+		while(quantidadeReposicao <= 0) {
+			System.out.println("Quantidade inválida, insira novamente: ");
+			quantidadeReposicao = sc.nextInt();
 		}
+		
+		ProdutoRepository.atualizarProduto(
+		        produto.getNome(),
+		        produto.getPreco(),
+		        produto.getQuantidade() + quantidadeReposicao
+		    );
+		
+		 System.out.println("Estoque atualizado com sucesso.");
+		    System.out.println("Nova quantidade: "
+		            + (produto.getQuantidade() + quantidadeReposicao));
 	}
 
 	
