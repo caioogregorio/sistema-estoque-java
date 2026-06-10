@@ -49,20 +49,25 @@ public class VendaRepository {
 				
 				Connection conn = DB.getConnection();
 				
-				String sql = "SELECT * FROM venda";
+				String sql = "SELECT\r\n"
+						+ "    p.nome,\r\n"
+						+ "    v.quantidade_vendida,\r\n"
+						+ "    v.valor_total,\r\n"
+						+ "    v.data_venda\r\n"
+						+ "FROM venda v\r\n"
+						+ "JOIN produto p\r\n"
+						+ "ON v.produto_id = p.id;";
 				
 				PreparedStatement st = conn.prepareStatement(sql);
 						
 				ResultSet rs = st.executeQuery();
 				
 				while(rs.next()) {
-					System.out.println(
-							rs.getInt("id") + " - " +
-							rs.getInt("produto_id") + " - " +
-							rs.getInt("quantidade_vendida") + " - " +
-							rs.getDouble("valor_total" ) + " - " + 
-							rs.getTimestamp("data_venda")
-						);	
+				    System.out.println("Produto: " + rs.getString("nome"));
+				    System.out.println("Quantidade: " + rs.getInt("quantidade_vendida"));
+				    System.out.println("Valor Total: R$ " + rs.getDouble("valor_total"));
+				    System.out.println("Data: " + rs.getTimestamp("data_venda"));
+				    System.out.println("------------------------");
 				}
 				
 				rs.close();
@@ -91,6 +96,9 @@ public class VendaRepository {
 				return rs.getDouble("total");
 			}
 			
+			st.close();
+			rs.close();
+			
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
 		}
@@ -98,4 +106,79 @@ public class VendaRepository {
 		return 0.0;
 	}
 
+	public static void produtoMaisVendido() {
+		
+		try {
+			
+			Connection conn = DB.getConnection();
+			
+			String sql = "SELECT\r\n"
+					+ "    p.nome,\r\n"
+					+ "    SUM(v.quantidade_vendida) AS total_vendido\r\n"
+					+ "FROM venda v\r\n"
+					+ "JOIN produto p\r\n"
+					+ "ON v.produto_id = p.id\r\n"
+					+ "GROUP BY p.nome\r\n"
+					+ "ORDER BY total_vendido DESC\r\n"
+					+ "LIMIT 1;";
+			
+			PreparedStatement st = conn.prepareStatement(sql);
+			
+			ResultSet rs = st.executeQuery();
+			
+			if(rs.next()) {
+				String nome = rs.getString("nome");
+				int totalVendido = rs.getInt("total_vendido");
+
+				System.out.println("Produto mais vendido: " + nome);
+				System.out.println("Quantidade vendida: " + totalVendido);
+			}
+			
+			st.close();
+			rs.close();
+			
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		}
+	}
+	
+	public static void listarVendasPorPeriodo(Timestamp dataInicial, Timestamp dataFinal){
+	    
+		try {
+			
+			Connection conn = DB.getConnection();
+			
+			String sql = "SELECT\r\n"
+					+ "    p.nome,\r\n"
+					+ "    v.quantidade_vendida,\r\n"
+					+ "    v.valor_total,\r\n"
+					+ "    v.data_venda\r\n"
+					+ "FROM venda v\r\n"
+					+ "JOIN produto p\r\n"
+					+ "ON v.produto_id = p.id\r\n"
+					+ "WHERE v.data_venda BETWEEN ? AND ?";
+			
+			PreparedStatement st = conn.prepareStatement(sql);
+			
+			st.setTimestamp(1, dataInicial);
+			st.setTimestamp(2, dataFinal);
+			
+			ResultSet rs = st.executeQuery();
+			
+			while(rs.next()) {
+			    System.out.println("Produto: " + rs.getString("nome"));
+			    System.out.println("Quantidade: " + rs.getInt("quantidade_vendida"));
+			    System.out.println("Valor Total: R$ " + rs.getDouble("valor_total"));
+			    System.out.println("Data: " + rs.getTimestamp("data_venda"));
+			    System.out.println("------------------------");
+			}
+			
+			rs.close();
+			st.close();
+			conn.close();
+			
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		}
+	}
 }

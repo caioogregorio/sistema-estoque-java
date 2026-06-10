@@ -23,6 +23,8 @@ public class Menu {
 			System.out.println("7 - Listar vendas");
 			System.out.println("8 - Repor estoque");
 			System.out.println("9 - Mostrar faturamento total");
+			System.out.println("10 - Ver produto mais vendido");
+			System.out.println("11 - Listar vendas por periodo");
 			System.out.println("0 - Sair");
 			System.out.println();
 			
@@ -30,7 +32,7 @@ public class Menu {
 			opcao = sc.nextInt();
 			
 			
-				if(opcao < 0 || opcao > 6) {
+				if(opcao < 0 || opcao > 10) {
 					System.out.println("Opção inválida");
 					System.out.println("Digite novamente: ");
 					opcao = sc.nextInt();
@@ -65,6 +67,12 @@ public class Menu {
 						break;
 					case 9:
 						estoque.mostrarFaturamentoTotal();
+						break;
+					case 10:
+						estoque.mostrarProdutoMaisVendido();
+						break;
+					case 11:
+						estoque.listarVendasPorData();
 						break;
 				}
 				

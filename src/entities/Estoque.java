@@ -1,6 +1,7 @@
 package entities;
 
 
+import java.sql.Timestamp;
 import java.util.Scanner;
 
 import repository.ProdutoRepository;
@@ -181,5 +182,26 @@ public class Estoque {
 		System.out.println("Faturamento total: RS " + total);
 	}
 	
+	public void mostrarProdutoMaisVendido() {
+		VendaRepository.produtoMaisVendido();
+	}
 
+	public void listarVendasPorData() {
+		try {
+			sc.nextLine();
+			
+			System.out.println("Insira a data de inicio: ");
+			String inicio = sc.nextLine();
+			System.out.println("Insira a data final: ");
+			String fim = sc.nextLine();
+			
+			Timestamp dataInicial = Timestamp.valueOf(inicio);
+			Timestamp dataFinal = Timestamp.valueOf(fim);
+			
+			VendaRepository.listarVendasPorPeriodo(dataInicial, dataFinal);
+		} catch (IllegalArgumentException e) {
+			System.out.println("Formato de data inválido.");
+		}
+		
+	}
 }
