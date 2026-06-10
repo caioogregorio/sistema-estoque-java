@@ -1,51 +1,67 @@
-# Sistema de Estoque e Vendas em Java
+# Sistema de Estoque
 
-Projeto desenvolvido em Java com foco em aprendizado de Programação Orientada a Objetos, manipulação de listas e lógica de sistemas de estoque.
+Sistema de gerenciamento de estoque desenvolvido em Java com persistência de dados em MySQL utilizando JDBC.
 
 ## Funcionalidades
 
 * Cadastro de produtos
-* Listagem de produtos
-* Busca de produtos
-* Atualização de produtos
+* Busca de produtos por nome
+* Atualização de preço e quantidade
 * Remoção de produtos
-* Sistema de vendas
-* Validação de estoque
-* Menu interativo no terminal
+* Controle de estoque
+* Reposição de estoque
+* Registro de vendas
+* Histórico de vendas
+* Cálculo de faturamento total
+* Consulta do produto mais vendido
+* Relatório de vendas por período
 
-## Tecnologias utilizadas
+## Tecnologias Utilizadas
 
 * Java
-* Eclipse
-* Git
-* GitHub
+* JDBC
+* MySQL
+* Eclipse IDE
+* Git e GitHub
 
-## Estrutura do projeto
+## Estrutura do Projeto
 
-application/
+* `entities` - Classes de domínio (Produto, Venda, Estoque)
+* `repository` - Camada de acesso a dados
+* `db` - Configuração de conexão com o banco de dados
+* `ui` - Interface de interação com o usuário
 
-* Main.java
+## Banco de Dados
 
-entities/
+### Tabela Produto
 
-* Produto.java
-* Estoque.java
+* id
+* nome
+* preco
+* quantidade
 
-ui/
+### Tabela Venda
 
-* Menu.java
+* id
+* produto_id
+* quantidade_vendida
+* valor_total
+* data_venda
 
-## Objetivos do projeto
+## Conceitos Aplicados
 
-* Praticar lógica de programação
-* Aprender Programação Orientada a Objetos
-* Trabalhar com ArrayList
-* Utilizar Git e GitHub
-* Evoluir futuramente para persistência em arquivos e banco de dados
+* Programação Orientada a Objetos
+* CRUD
+* JDBC
+* SQL
+* Relacionamento entre tabelas
+* JOIN
+* Agregações SQL (SUM)
+* Filtros por período de data
+* Padrão Repository
 
-## Melhorias futuras
+## Autor
 
-* Persistência em arquivos
-* Banco de dados
-* Interface gráfica
-* API REST com Spring Boot
+Caio Gregório
+
+
